@@ -2,7 +2,7 @@
 #define TABLEWINDOW_H
 
 #include <QWidget>
-
+#include <QStandardItem>
 #include <QDialog>
 
 
@@ -17,9 +17,18 @@ class tablewindow : public QDialog
 public:
     explicit tablewindow(QWidget *parent = nullptr);
     ~tablewindow();
-
+private slots:
+    void addTable();
+    void addRow();
 private:
     Ui::tablewindow *ui;
+    QStandardItemModel  *model;
+    void loadTableView();
+
+
+public:
+
+
 };
 
 #endif // TABLEWINDOW_H

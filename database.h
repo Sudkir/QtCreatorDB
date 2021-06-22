@@ -66,6 +66,7 @@ private:
     void openEmptyDataBase();
 
     bool createTable();
+    void addFile(QString Name,QString Path,QString File);
 };
 
 #endif // DATABASE_H

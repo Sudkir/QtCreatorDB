@@ -107,7 +107,7 @@ void MainWindow::createDB( QString nameDB,  QString nameUser,  QString userPassw
     //}
 
     //окно сохранения файла
-    QString fileName = QString("SQL_"+nameDB+"_"+nameUser+".sql");
+    QString fileName = QString("DB_"+nameDB+"_"+nameUser+".sql");
     QString fileN=
                QFileDialog::getSaveFileName( this,
                                              tr("Сохранить файл как"),
@@ -155,14 +155,20 @@ void MainWindow::createDB( QString nameDB,  QString nameUser,  QString userPassw
     // Инициализируем внешний вид таблицы с данными
     this->createUI();
 
+    ui->lineEdit->setText("");
+    ui->lineEdit_2->setText("");
+    ui->lineEdit_3->setText("");
+
 
 }
 //изменение размера окна
+
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
     QMainWindow::resizeEvent(event);
     //ui->tableViewDB->setSizeIncrement(QSize());
 }
+
 
 void MainWindow::createTable()
 {
@@ -170,8 +176,26 @@ void MainWindow::createTable()
 
         QString IDDB=(model->index(rowidx , 0).data().toString());//id
         ui->db_name->setText(model->index(rowidx , 1).data().toString());//name
-        tableW = new tablewindow;
-        tableW->exec();
+        QString NameDB=(model->index(rowidx , 1).data().toString());
+        if(NameDB[0]=='D'&&NameDB[1]=='B')
+        {
+            tableW = new tablewindow;
+            tableW->exec();
+            if(tableW->close())
+            {
+                this->setupModel(TABLE_FILES,
+                                 QStringList() << QString ("id")
+                                               << QString("Имя         ")
+                                               << QString("Расположение")
+                                               << QString("Вес         "));
+                this->createUI();
+            }
+        }
+        else
+        {
+            QMessageBox::warning(0, QObject::tr("Ошибка!"),"Выбрана не База Данных.\nВыберите файл, который начинается с \"DB_\"");
+        }
+
 }
 
 void MainWindow::handleButton() {

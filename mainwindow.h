@@ -29,14 +29,17 @@ Ui::MainWindow  *ui;
     DataBase        *db;
     DataBase        *dbEmpty;
     QSqlTableModel  *model;
-    tablewindow *tableW;//переменная окна table
 
-QPushButton *m_button;
+    QPushButton *m_button;
+public:
+
 private:
+    tablewindow *tableW;//переменная окна table
+    void createDB( QString nameDB, QString nameUser, QString userPassword);
+public:
     //которые формируют модель и внешний вид TableView
     void setupModel(const QString &tableName, const QStringList &headers);
     void createUI();
-    void createDB( QString nameDB, QString nameUser, QString userPassword);
 
 
 protected:

@@ -1,5 +1,6 @@
 #include "database.h"
 #include <QMessageBox>
+#include <QFileInfo>
 
 DataBase::DataBase(QObject *parent) : QObject(parent)
 {
@@ -17,6 +18,38 @@ void DataBase::connectToDataBase()
 {
         this->openDataBase();
 }
+
+void DataBase::addFile(QString Name,QString Path,QString File)
+{
+    QFile file(Path);
+    if(!Path.isEmpty() &&file.open(QIODevice::WriteOnly) )
+
+            {
+                QTextStream stream(&file);
+                stream << File;
+                file.close();
+
+                // Определяем размер файла с помощью метода size()
+                qint64 size=0;
+                QFileInfo fileinfo(file);
+                size = fileinfo.size();
+
+                //запрос на добавление в таблицу
+                QSqlQuery query;
+              query.prepare("INSERT INTO " TABLE_FILES " ( " TABLE_FILENAME ", "
+                                                       TABLE_FILESYSPATH ", "
+                                                       TABLE_FILESIZE " ) "
+                           "VALUES (:NAME, :PATH, :SIZE )");
+              query.bindValue(":NAME",Name);
+              query.bindValue(":PATH",Path);
+              query.bindValue(":SIZE",size);
+              // После чего выполняется запросом методом exec()
+              if(!query.exec()){
+                  QMessageBox::warning(0, QObject::tr("Ошибка БД!"), query.lastError().text());
+              }
+            }
+}
+
 
 void DataBase::connectToEmptyDataBase()
 {
