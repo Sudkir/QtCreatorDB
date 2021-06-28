@@ -13,46 +13,33 @@ MainWindow::MainWindow(QWidget *parent)
   ui(new Ui::MainWindow)
 {
 
-
-  /* После чего производим наполнение таблицы базы данных
-   * контентом, который будет отображаться в TableView
-   *
-
-
-  for(int i = 0; i < 4; i++){
-      QVariantList data;
-      int random = qrand(); // Получаем случайные целые числа для вставки а базу данных
-      data.append(QDate::currentDate()); // Получаем текущую дату для вставки в БД
-      data.append(QTime::currentTime()); // Получаем текущее время для вставки в БД
-      // Подготавливаем полученное случайное число для вставки в БД
-      data.append(random);
-      // Подготавливаем сообщение для вставки в базу данных
-      data.append("Получено сообщение от " + QString::number(random));
-      // Вставляем данные в БД
-      db->inserIntoTable(data);
-  }
-  */
-
     ui->setupUi(this);
     //объект БД
     db = new DataBase();
     //инициализировать подключение к базе данных
     db->connectToDataBase();
-   //Инициализируем модель для представления данных с заданием названий колонок
-  this->setupModel(TABLE_FILES,
-                   QStringList() << QString ("id")
-                                 << QString("Имя")
-                                 << QString("Расположение")
-                                 << QString("Вес"));
-
-  // Инициализируем внешний вид таблицы с данными
-  this->createUI();
+    updateView();
     //обработчик кнопки
     connect(ui->AddDBBtn, SIGNAL (clicked()), this, SLOT (handleButton()));
     connect(ui->AddTableBtn, SIGNAL (clicked()), this, SLOT (createTable()));
-
-
+    connect(ui->AddKeybtn, SIGNAL (clicked()), this, SLOT (addKey()));
 }
+
+
+void MainWindow::updateView()
+{
+    //Инициализируем модель для представления данных с заданием названий колонок
+   this->setupModel(TABLE_FILES,
+                    QStringList() << QString ("id")
+                                  << QString("Имя")
+                                  << QString("Расположение")
+                                  << QString("Вес"));
+
+   // Инициализируем внешний вид таблицы с данными
+   this->createUI();
+}
+
+
 
 /* Метод для инициализации модеи представления данных
  * */
@@ -88,10 +75,10 @@ void MainWindow::createUI(){
     ui->tableViewDB->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     ui->tableViewDB->horizontalHeader()->setStretchLastSection(true);
 
-
-
     model->select(); // Делаем выборку данных из таблицы
 }
+
+
 
 void MainWindow::createDB( QString nameDB,  QString nameUser,  QString userPassword)
 {
@@ -99,13 +86,8 @@ void MainWindow::createDB( QString nameDB,  QString nameUser,  QString userPassw
     //CREATE USER test_user WITH password 'qwerty';
     //CREATE DATABASE test_database OWNER test_user;
 
-    QString sqlUser = QString ("CREATE USER '%1' WITH password '%2'").arg(nameUser,userPassword);
-    QString sqlDB = QString ("CREATE DATABASE '%1' OWNER '%2'").arg(nameDB,nameUser);
-
-    //if(file.exists()){
-    //qDebug() << "Файл существует";
-    //}
-
+    QString sqlDB = QString ("CREATE USER '%1' WITH password '%2'\nCREATE DATABASE '%3' OWNER '%4'")
+                            .arg(nameUser,userPassword,nameDB,nameUser);
     //окно сохранения файла
     QString fileName = QString("DB_"+nameDB+"_"+nameUser+".sql");
     QString fileN=
@@ -120,7 +102,7 @@ void MainWindow::createDB( QString nameDB,  QString nameUser,  QString userPassw
 
             {
                 QTextStream stream(&file);
-                stream << sqlUser+"\n"+sqlDB;
+                stream << sqlDB;
                 file.close();
                 // Определяем размер файла с помощью метода size()
                 QFileInfo fileinfo(file);
@@ -144,25 +126,10 @@ void MainWindow::createDB( QString nameDB,  QString nameUser,  QString userPassw
          QMessageBox::warning(0, QObject::tr("Ошибка!"),"Выбран неверный путь.");
     }
 
-    this->setupModel(TABLE_FILES,
-                     QStringList() << QString ("id")
-                                   << QString("Имя         ")
-                                   << QString("Расположение")
-                                   << QString("Вес         ")
-
-               );
-
-    // Инициализируем внешний вид таблицы с данными
-    this->createUI();
-
-    ui->lineEdit->setText("");
-    ui->lineEdit_2->setText("");
-    ui->lineEdit_3->setText("");
-
 
 }
-//изменение размера окна
 
+// обработчик изменение размера окна
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
     QMainWindow::resizeEvent(event);
@@ -183,12 +150,7 @@ void MainWindow::createTable()
             tableW->exec();
             if(tableW->close())
             {
-                this->setupModel(TABLE_FILES,
-                                 QStringList() << QString ("id")
-                                               << QString("Имя         ")
-                                               << QString("Расположение")
-                                               << QString("Вес         "));
-                this->createUI();
+                updateView();
             }
         }
         else
@@ -198,28 +160,92 @@ void MainWindow::createTable()
 
 }
 
+void MainWindow::createKey(QString nameTbl1, QString nameColumn1, QString nameTbl2, QString nameColumn2)
+{
+    //ALTER TABLE table1 ADD FOREING KEY (colum1) REFERENCES table2(column2);
+    QString sqlKey = QString ("ALTER TABLE '%1' ADD FOREING KEY ('%2') REFERENCES '%3'('%4);").arg(nameTbl1,  nameColumn1,  nameTbl2,  nameColumn2);
+    QString fileName = QString("KEY_"+nameTbl1+"_("+nameColumn1+").sql");
+    QString fileN=
+               QFileDialog::getSaveFileName( this,
+                                             tr("Сохранить файл как"),
+                                             fileName,
+                                             tr("SQL(*.sql)")
+                                             );
+    qint64 size=0;
+    QFile file(fileN);
+    if(!fileN.isEmpty() &&file.open(QIODevice::WriteOnly) )
+
+            {
+                QTextStream stream(&file);
+                stream << sqlKey;
+                file.close();
+                // Определяем размер файла с помощью метода size()
+                QFileInfo fileinfo(file);
+                size = fileinfo.size();
+                //запрос на добавление в таблицу
+                QSqlQuery query;
+              query.prepare("INSERT INTO " TABLE_FILES " ( " TABLE_FILENAME ", "
+                                                       TABLE_FILESYSPATH ", "
+                                                       TABLE_FILESIZE " ) "
+                           "VALUES (:NAME, :PATH, :SIZE )");
+              query.bindValue(":NAME",fileName);
+              query.bindValue(":PATH",fileN);
+              query.bindValue(":SIZE",size);
+              // После чего выполняется запросом методом exec()
+              if(!query.exec()){
+                  QMessageBox::warning(0, QObject::tr("Ошибка БД!"), query.lastError().text());
+              }
+            }
+    else
+    {
+         QMessageBox::warning(0, QObject::tr("Ошибка!"),"Выбран неверный путь.");
+    }
+
+
+}
+
+//принятие данных из форм и запись их в запрос к бд
+//Инициализируем внешний вид таблицы с данными
+//очищает поля для ввода
+void MainWindow::addKey()
+{
+    QString f1,f2,f3,f4;
+
+    f1=ui->lineEdit_4->text();
+    f2=ui->lineEdit_5->text();
+    f3=ui->lineEdit_6->text();
+    f4=ui->lineEdit_7->text();
+
+    createKey(f1,f2,f3,f4);
+    updateView();
+
+    ui->lineEdit_4->setText("");
+    ui->lineEdit_5->setText("");
+    ui->lineEdit_6->setText("");
+    ui->lineEdit_7->setText("");
+}
+
+
 void MainWindow::handleButton() {
-    //принятие данных из форм и запись их в запрос к бд
+
     QString f1,f2,f3;
+
     f1=ui->lineEdit->text();
     f2=ui->lineEdit_2->text();
     f3=ui->lineEdit_3->text();
-    createDB(f1,f2,f3);
+
+    createDB(f1,f2,f3);  
+    updateView();
+
+    ui->lineEdit->setText("");
+    ui->lineEdit_2->setText("");
+    ui->lineEdit_3->setText("");
+
 }
 
 MainWindow::~MainWindow() {
 
 }
-
-/*
-int rowidx = ui->tblView->selectionModel()->currentIndex().row();
-ui->txt1->setText(model->index(rowidx , 0).data().toString());
-ui->txt2->setText(model->index(rowidx , 1).data().toString());
-ui->txt3->setText(model->index(rowidx , 2).data().toString());
-ui->txt4->setText(model->index(rowidx , 3).data().toString());
-*/
-
-
 
 
 

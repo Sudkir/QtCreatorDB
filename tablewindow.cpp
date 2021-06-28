@@ -11,9 +11,6 @@
 #include <database.h>
 
 
-//void setupModel ();
-
-
 tablewindow::tablewindow(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::tablewindow)

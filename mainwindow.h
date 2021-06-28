@@ -22,6 +22,7 @@ private slots:
     //функция книпки
     void handleButton();
     void createTable();
+    void addKey();
 private:
 Ui::MainWindow  *ui;
     //объекты для взаимодействия с информацией в базе данных
@@ -29,12 +30,12 @@ Ui::MainWindow  *ui;
     DataBase        *db;
     DataBase        *dbEmpty;
     QSqlTableModel  *model;
-
     QPushButton *m_button;
-public:
+    tablewindow *tableW;
 
 private:
-    tablewindow *tableW;//переменная окна table
+    void createKey(QString nameTbl1, QString nameColumn1, QString nameTbl2, QString nameColumn2);
+    void updateView();
     void createDB( QString nameDB, QString nameUser, QString userPassword);
 public:
     //которые формируют модель и внешний вид TableView
