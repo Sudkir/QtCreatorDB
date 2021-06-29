@@ -17,26 +17,22 @@ tablewindow::tablewindow(QWidget *parent) :
 {
     ui->setupUi(this);
     loadTableView();
-    //
-
-
-
 
     connect(ui->addTableBtn,SIGNAL(clicked()),this,SLOT(addTable()));
     connect(ui->addRowBtn,SIGNAL(clicked()),this,SLOT(addRow()));
 
 }
+//добавление пкстой сроки
 void tablewindow::addRow()
 {
     int lastRow = model->rowCount();
         model->insertRow(lastRow);
 }
 
+
+//дефолтное заплнение первых строк
 void tablewindow::loadTableView()
 {
-    model = new QStandardItemModel();
-
-
     /*
 CREATE TABLE customers
 (
@@ -47,6 +43,9 @@ CREATE TABLE customers
     Age INTEGER
 );
 */
+
+
+    model = new QStandardItemModel();
 
 QList<QStandardItem*> lst;
 
@@ -74,6 +73,7 @@ QList<QStandardItem*> lstr;
 
 }
 
+//добавление таблицы и схранения скрипта
 void tablewindow::addTable()
 {
 
@@ -96,8 +96,7 @@ if(ui->lineName->text()!="")
                    QFileDialog::getSaveFileName( this,
                                                  tr("Сохранить файл как"),
                                                  fileName,
-                                                 tr("SQL(*.sql)")
-                                                 );
+                                                 tr("SQL(*.sql)"));
 
         QFile file(fileN);
         if(!fileN.isEmpty() &&file.open(QIODevice::WriteOnly) )
@@ -106,13 +105,8 @@ if(ui->lineName->text()!="")
                     QTextStream stream(&file);
                     stream << sqlAddTable;
                     file.close();
-
-                    // Определяем размер файла с помощью метода size()
-                    qint64 size=0;
                     QFileInfo fileinfo(file);
-                    size = fileinfo.size();
-
-                    //запрос на добавление в таблицу
+                    qint64 size=fileinfo.size();
                     QSqlQuery query;
                   query.prepare("INSERT INTO " TABLE_FILES " ( " TABLE_FILENAME ", "
                                                            TABLE_FILESYSPATH ", "
@@ -130,46 +124,10 @@ if(ui->lineName->text()!="")
 
         this->hide();
     }
-else
+      else
     {
         QMessageBox::warning(0, QObject::tr("Ошибка!"),"Введите название таблицы");
     }
-
-
-
-
-
-        // Разрешаем выделение строк
-        //ui->listView->setSelectionBehavior(QAbstractItemView::SelectRows);
-        // Устанавливаем режим выделения лишь одно строки в таблице
-        //ui->listView->setSelectionMode(QAbstractItemView::SingleSelection);
-        //ui->listView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-
-
-
-        /*
-
-добавиить цикл считывания всего тэбл виев
-добавить окно сохранения
-авто бодгон размеров
-кнопка добавления количесва строк
-поле для названия таблицы
-
-       for(int row = 0;row<2;row++)
-       {
-           QList<QStandardItem*> lst;
-           for(int column = 0;column<2;column++)
-           {
-               QStandardItem* item = new QStandardItem(row,column);
-               item->setText("");
-               lst<<item;
-           }
-
-           model->appendRow(lst);
-       }
-       mode
-
-*/
 }
 
 tablewindow::~tablewindow()

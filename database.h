@@ -47,24 +47,16 @@ public:
      * Подключение к базе данных и вставка записей в таблицу
      * */
     void connectToDataBase();
-     void connectToEmptyDataBase();
     bool inserIntoTable(const QVariantList &data);
-    void closeEmptyDataBase();
     void closeDataBase();
-
 private:
     // Сам объект базы данных, с которым будет производиться работа
     QSqlDatabase    SearchDB;
-    QSqlDatabase EmptyDB;
-
-private:
     /* Внутренние методы для работы с базой данных
      * */
     bool openDataBase();
-
     bool restoreDataBase();
     void openEmptyDataBase();
-
     bool createTable();
     void addFile(QString Name,QString Path,QString File);
 };

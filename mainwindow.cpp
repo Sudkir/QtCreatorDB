@@ -96,7 +96,6 @@ void MainWindow::createDB( QString nameDB,  QString nameUser,  QString userPassw
                                              fileName,
                                              tr("SQL(*.sql)")
                                              );
-    qint64 size=0;
     QFile file(fileN);
     if(!fileN.isEmpty() &&file.open(QIODevice::WriteOnly) )
 
@@ -104,10 +103,8 @@ void MainWindow::createDB( QString nameDB,  QString nameUser,  QString userPassw
                 QTextStream stream(&file);
                 stream << sqlDB;
                 file.close();
-                // Определяем размер файла с помощью метода size()
                 QFileInfo fileinfo(file);
-                size = fileinfo.size();
-                //запрос на добавление в таблицу
+                qint64 size=fileinfo.size();
                 QSqlQuery query;
               query.prepare("INSERT INTO " TABLE_FILES " ( " TABLE_FILENAME ", "
                                                        TABLE_FILESYSPATH ", "
@@ -127,13 +124,6 @@ void MainWindow::createDB( QString nameDB,  QString nameUser,  QString userPassw
     }
 
 
-}
-
-// обработчик изменение размера окна
-void MainWindow::resizeEvent(QResizeEvent* event)
-{
-    QMainWindow::resizeEvent(event);
-    //ui->tableViewDB->setSizeIncrement(QSize());
 }
 
 
@@ -171,7 +161,6 @@ void MainWindow::createKey(QString nameTbl1, QString nameColumn1, QString nameTb
                                              fileName,
                                              tr("SQL(*.sql)")
                                              );
-    qint64 size=0;
     QFile file(fileN);
     if(!fileN.isEmpty() &&file.open(QIODevice::WriteOnly) )
 
@@ -179,10 +168,8 @@ void MainWindow::createKey(QString nameTbl1, QString nameColumn1, QString nameTb
                 QTextStream stream(&file);
                 stream << sqlKey;
                 file.close();
-                // Определяем размер файла с помощью метода size()
                 QFileInfo fileinfo(file);
-                size = fileinfo.size();
-                //запрос на добавление в таблицу
+                qint64 size=fileinfo.size();
                 QSqlQuery query;
               query.prepare("INSERT INTO " TABLE_FILES " ( " TABLE_FILENAME ", "
                                                        TABLE_FILESYSPATH ", "
@@ -204,9 +191,11 @@ void MainWindow::createKey(QString nameTbl1, QString nameColumn1, QString nameTb
 
 }
 
-//принятие данных из форм и запись их в запрос к бд
-//Инициализируем внешний вид таблицы с данными
-//очищает поля для ввода
+
+/* принятие данных из форм и запись их в запрос к бд
+ *Инициализируем внешний вид таблицы с данными
+ *Очищает поля для ввода
+ * */
 void MainWindow::addKey()
 {
     QString f1,f2,f3,f4;
@@ -244,6 +233,7 @@ void MainWindow::handleButton() {
 }
 
 MainWindow::~MainWindow() {
+    db->closeDataBase();
 
 }
 

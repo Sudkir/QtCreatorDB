@@ -51,10 +51,6 @@ void DataBase::addFile(QString Name,QString Path,QString File)
 }
 
 
-void DataBase::connectToEmptyDataBase()
-{
-        this->openEmptyDataBase();
-}
 
 /* Метод для открытия базы данных
  * */
@@ -68,7 +64,6 @@ bool DataBase::openDataBase()
     SearchDB.setUserName("postgres");
     SearchDB.setHostName("localhost");
     SearchDB.setPassword("12345");
-//SearchDB.setHostName("127.0.0.1");
     SearchDB.setPort(5432);
     if(!SearchDB.open())
     {
@@ -82,14 +77,6 @@ bool DataBase::openDataBase()
 
 }
 
-void DataBase::openEmptyDataBase()
-{
-    EmptyDB = QSqlDatabase::addDatabase("QPSQL");
-    EmptyDB.setHostName("localhost");
-    EmptyDB.setPort(5432);
-    if(!EmptyDB.open())
-        QMessageBox::warning(0, QObject::tr("Ошибка БД!"), EmptyDB.lastError().text());
-}
 
 /* Методы закрытия базы данных
  * */
@@ -97,10 +84,7 @@ void DataBase::closeDataBase()
 {
    SearchDB.close();
 }
-void DataBase::closeEmptyDataBase()
-{
-   EmptyDB.close();
-}
+
 
 /* Метод для создания таблицы в базе данных
  * */

@@ -37,15 +37,9 @@ private:
     void createKey(QString nameTbl1, QString nameColumn1, QString nameTbl2, QString nameColumn2);
     void updateView();
     void createDB( QString nameDB, QString nameUser, QString userPassword);
-public:
     //которые формируют модель и внешний вид TableView
     void setupModel(const QString &tableName, const QStringList &headers);
     void createUI();
-
-
-protected:
-    // изменение размера компонентов в след за окном
-    virtual void resizeEvent(QResizeEvent *);
 
 };
 #endif // MAINWINDOW_H

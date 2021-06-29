@@ -13,14 +13,10 @@ class StartWindow : public QMainWindow
 {
     Q_OBJECT
 public slots:
-    void openMain();//функция открытия main
-    void loadUser();
+    void loadMain();
 public:
     explicit StartWindow(QWidget *parent = nullptr);
     ~StartWindow();
-
-
-
 private:
     Ui::StartWindow *ui;
     MainWindow *mainW;//переменная окна main

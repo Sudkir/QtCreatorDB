@@ -13,7 +13,7 @@ StartWindow::StartWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    connect(ui->acceptBtn,SIGNAL(clicked()),this,SLOT(openMain()));
+    connect(ui->acceptBtn,SIGNAL(clicked()),this,SLOT(loadMain()));
 }
 
 StartWindow::~StartWindow()
@@ -21,20 +21,23 @@ StartWindow::~StartWindow()
     delete ui;
 }
 
-void StartWindow::loadUser()
+
+/* В начале SQL запрос формируется с ключами,
+ * которые потом связываются методом bindValue
+ * для подстановки данных из QVariantList
+ * затем открытие основного рабочего окна
+ * */
+
+
+
+void StartWindow::loadMain()
 {
-    //принятие данных из форм и запись их в запрос к бд
-    QString FNameStr;
+    QString FNameStr,SNameStr,TelStr;
     FNameStr=ui->lineEdit->text();
-    QString SNameStr;
     SNameStr=ui->lineEdit_2->text();
-    QString TelStr;
     TelStr=ui->lineEdit_3->text();
 
-    /* В начале SQL запрос формируется с ключами,
-     * которые потом связываются методом bindValue
-     * для подстановки данных из QVariantList
-     * */
+
       QSqlQuery query;
     query.prepare("INSERT INTO " TABLE_USERS " ( " TABLE_FNAME ", "
                                              TABLE_SNAME ", "
@@ -47,15 +50,9 @@ void StartWindow::loadUser()
     if(!query.exec()){
         QMessageBox::warning(0, QObject::tr("Ошибка БД!"), query.lastError().text());
     }
-}
 
-//открытие окна
-void StartWindow::openMain()
-{
-
-    loadUser();
     this->hide();
     mainW = new MainWindow;
     mainW->show();
-
 }
+
