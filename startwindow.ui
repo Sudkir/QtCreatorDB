@@ -46,7 +46,7 @@
      </widget>
     </item>
     <item row="1" column="1">
-     <widget class="QLineEdit" name="lineEdit">
+     <widget class="QLineEdit" name="lineFirstName">
       <property name="maximumSize">
        <size>
         <width>400</width>
@@ -61,7 +61,7 @@
      </widget>
     </item>
     <item row="5" column="1">
-     <widget class="QLineEdit" name="lineEdit_3">
+     <widget class="QLineEdit" name="lineTelephoneNumber">
       <property name="maximumSize">
        <size>
         <width>400</width>
@@ -113,7 +113,7 @@
      </spacer>
     </item>
     <item row="3" column="1">
-     <widget class="QLineEdit" name="lineEdit_2">
+     <widget class="QLineEdit" name="lineLastName">
       <property name="maximumSize">
        <size>
         <width>400</width>

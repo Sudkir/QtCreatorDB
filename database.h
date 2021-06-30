@@ -9,6 +9,8 @@
 #include <QFile>
 #include <QDate>
 #include <QDebug>
+#include <QMessageBox>
+#include <QFileInfo>
 
 /* Директивы имен таблицы, полей таблицы и базы данных */
 #define DATABASE_HOSTNAME   "ExampleDataBase"
@@ -16,20 +18,15 @@
 //name table in DB
 #define TABLE_USERS                   "users"
 #define TABLE_FILES                   "files"
-//test db
-#define TABLE_DATE              "Date"
-#define TABLE_TIME              "Time"
-#define TABLE_MESSAGE           "Message"
-#define TABLE_RANDOM            "Random"
-//table users
+//Таблица Пользователь
 #define TABLE_FNAME "firstname"
 #define TABLE_SNAME "lastname"
 #define TABLE_TEL "tel"
-//new DB
+//Новая база данных
 #define TABLE_DBNAME "dbname"
 #define TABLE_USERNAME "username"
 #define TABLE_USERPASSWORD "userPassword"
-//table files
+//Значения таблицы
 #define TABLE_FILENAME "filename"
 #define TABLE_FILESYSPATH "filesyspath"
 #define TABLE_FILESIZE "filesize"
@@ -47,7 +44,6 @@ public:
      * Подключение к базе данных и вставка записей в таблицу
      * */
     void connectToDataBase();
-    bool inserIntoTable(const QVariantList &data);
     void closeDataBase();
 private:
     // Сам объект базы данных, с которым будет производиться работа
@@ -55,10 +51,7 @@ private:
     /* Внутренние методы для работы с базой данных
      * */
     bool openDataBase();
-    bool restoreDataBase();
-    void openEmptyDataBase();
-    bool createTable();
-    void addFile(QString Name,QString Path,QString File);
+
 };
 
 #endif // DATABASE_H

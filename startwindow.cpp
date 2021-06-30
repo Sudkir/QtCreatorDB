@@ -1,11 +1,4 @@
 #include "startwindow.h"
-#include "ui_startwindow.h"
-#include <QCoreApplication>
-#include <QLineEdit>
-#include <QMessageBox>
-#include "database.h"
-
-
 
 StartWindow::StartWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -21,32 +14,24 @@ StartWindow::~StartWindow()
     delete ui;
 }
 
-
-/* В начале SQL запрос формируется с ключами,
- * которые потом связываются методом bindValue
- * для подстановки данных из QVariantList
- * затем открытие основного рабочего окна
- * */
-
-
-
+//загрузка основной формы программы
 void StartWindow::loadMain()
 {
-    QString FNameStr,SNameStr,TelStr;
-    FNameStr=ui->lineEdit->text();
-    SNameStr=ui->lineEdit_2->text();
-    TelStr=ui->lineEdit_3->text();
-
+    QString firstName;
+    QString lastName;
+    QString telephoneNumber;
+    firstName=ui->lineFirstName->text();
+    lastName=ui->lineLastName->text();
+    telephoneNumber=ui->lineTelephoneNumber->text();
 
       QSqlQuery query;
     query.prepare("INSERT INTO " TABLE_USERS " ( " TABLE_FNAME ", "
                                              TABLE_SNAME ", "
                                              TABLE_TEL " ) "
                   "VALUES (:FName, :SName, :Tel )");
-    query.bindValue(":FName",        FNameStr);
-    query.bindValue(":SName",        SNameStr);
-    query.bindValue(":Tel",      TelStr);
-    // После чего выполняется запросом методом exec()
+    query.bindValue(":FName",        firstName);
+    query.bindValue(":SName",        lastName);
+    query.bindValue(":Tel",      telephoneNumber);
     if(!query.exec()){
         QMessageBox::warning(0, QObject::tr("Ошибка БД!"), query.lastError().text());
     }

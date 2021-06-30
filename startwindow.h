@@ -1,8 +1,14 @@
 #ifndef STARTWINDOW_H
 #define STARTWINDOW_H
 
+#include "ui_startwindow.h"
+#include "database.h"
+#include "mainwindow.h"
+
+#include <QCoreApplication>
+#include <QLineEdit>
+#include <QMessageBox>
 #include <QMainWindow>
-#include <mainwindow.h>
 #include <QPushButton>
 
 namespace Ui {
@@ -19,7 +25,7 @@ public:
     ~StartWindow();
 private:
     Ui::StartWindow *ui;
-    MainWindow *mainW;//переменная окна main
+    MainWindow *mainW;
 };
 
 #endif // STARTWINDOW_H

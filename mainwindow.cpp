@@ -1,11 +1,4 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
-#include <QCoreApplication>
-#include <QSqlTableModel>
-#include <QMessageBox>
-#include <QFileDialog>
-
-
 
 MainWindow::MainWindow(QWidget *parent)
 
@@ -14,28 +7,25 @@ MainWindow::MainWindow(QWidget *parent)
 {
 
     ui->setupUi(this);
-    //объект БД
+    //Создать объект БД и инициализировать подключение к базе данных
     db = new DataBase();
-    //инициализировать подключение к базе данных
     db->connectToDataBase();
     updateView();
-    //обработчик кнопки
-    connect(ui->AddDBBtn, SIGNAL (clicked()), this, SLOT (handleButton()));
-    connect(ui->AddTableBtn, SIGNAL (clicked()), this, SLOT (createTable()));
-    connect(ui->AddKeybtn, SIGNAL (clicked()), this, SLOT (addKey()));
+    //обработчик кнопок
+    connect(ui->addDBBtn, SIGNAL (clicked()), this, SLOT (addDB()));
+    connect(ui->addTableBtn, SIGNAL (clicked()), this, SLOT (createTable()));
+    connect(ui->addKeybtn, SIGNAL (clicked()), this, SLOT (addKey()));
 }
 
-
+//Инициализируем модель для представления данных с заданием названий колонок и внешний вид таблицы с данными
 void MainWindow::updateView()
 {
-    //Инициализируем модель для представления данных с заданием названий колонок
+
    this->setupModel(TABLE_FILES,
                     QStringList() << QString ("id")
                                   << QString("Имя")
                                   << QString("Расположение")
                                   << QString("Вес"));
-
-   // Инициализируем внешний вид таблицы с данными
    this->createUI();
 }
 
@@ -71,37 +61,28 @@ void MainWindow::createUI(){
     // Устанавливаем размер колонок по содержимому
     ui->tableViewDB->resizeColumnsToContents();
     ui->tableViewDB->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    //размер по содержимому
     ui->tableViewDB->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     ui->tableViewDB->horizontalHeader()->setStretchLastSection(true);
-
-    model->select(); // Делаем выборку данных из таблицы
+    // Делаем выборку данных из таблицы
+    model->select();
 }
 
 
 
-void MainWindow::createDB( QString nameDB,  QString nameUser,  QString userPassword)
+//Добавление таблицы и сохранения файла с расширением .sql
+bool MainWindow::addFile(QString name,QString insertInfo)
 {
-
-    //CREATE USER test_user WITH password 'qwerty';
-    //CREATE DATABASE test_database OWNER test_user;
-
-    QString sqlDB = QString ("CREATE USER '%1' WITH password '%2'\nCREATE DATABASE '%3' OWNER '%4'")
-                            .arg(nameUser,userPassword,nameDB,nameUser);
-    //окно сохранения файла
-    QString fileName = QString("DB_"+nameDB+"_"+nameUser+".sql");
-    QString fileN=
+    QString filePath=
                QFileDialog::getSaveFileName( this,
                                              tr("Сохранить файл как"),
-                                             fileName,
-                                             tr("SQL(*.sql)")
-                                             );
-    QFile file(fileN);
-    if(!fileN.isEmpty() &&file.open(QIODevice::WriteOnly) )
+                                             name,
+                                             tr("SQL(*.sql)") );
+    QFile file(filePath);
+    if(!filePath.isEmpty() && file.open(QIODevice::WriteOnly) )
 
             {
                 QTextStream stream(&file);
-                stream << sqlDB;
+                stream << insertInfo;
                 file.close();
                 QFileInfo fileinfo(file);
                 qint64 size=fileinfo.size();
@@ -110,31 +91,30 @@ void MainWindow::createDB( QString nameDB,  QString nameUser,  QString userPassw
                                                        TABLE_FILESYSPATH ", "
                                                        TABLE_FILESIZE " ) "
                            "VALUES (:NAME, :PATH, :SIZE )");
-              query.bindValue(":NAME",fileName);
-              query.bindValue(":PATH",fileN);
+              query.bindValue(":NAME",name);
+              query.bindValue(":PATH",filePath);
               query.bindValue(":SIZE",size);
-              // После чего выполняется запросом методом exec()
               if(!query.exec()){
                   QMessageBox::warning(0, QObject::tr("Ошибка БД!"), query.lastError().text());
+                  return false;
+              }
+              else
+              {return false;
               }
             }
-    else
-    {
-         QMessageBox::warning(0, QObject::tr("Ошибка!"),"Выбран неверный путь.");
-    }
-
-
 }
 
 
+
+//Создание таблицы
 void MainWindow::createTable()
 {
     int rowidx = ui->tableViewDB->selectionModel()->currentIndex().row();
 
-        QString IDDB=(model->index(rowidx , 0).data().toString());//id
-        ui->db_name->setText(model->index(rowidx , 1).data().toString());//name
-        QString NameDB=(model->index(rowidx , 1).data().toString());
-        if(NameDB[0]=='D'&&NameDB[1]=='B')
+        QString idDB=(model->index(rowidx , 0).data().toString());//id
+        ui->uiNameDB->setText(model->index(rowidx , 1).data().toString());//name
+        QString nameDB=(model->index(rowidx , 1).data().toString());
+        if(nameDB[0]=='D'&&nameDB[1]=='B')
         {
             tableW = new tablewindow;
             tableW->exec();
@@ -145,90 +125,65 @@ void MainWindow::createTable()
         }
         else
         {
-            QMessageBox::warning(0, QObject::tr("Ошибка!"),"Выбрана не База Данных.\nВыберите файл, который начинается с \"DB_\"");
+            QMessageBox::warning(0, QObject::tr("Ошибка!"),"Выбрана не База Данных."
+                                                           "\nВыберите файл, который начинается с \"DB_\"");
         }
 
 }
 
-void MainWindow::createKey(QString nameTbl1, QString nameColumn1, QString nameTbl2, QString nameColumn2)
-{
-    //ALTER TABLE table1 ADD FOREING KEY (colum1) REFERENCES table2(column2);
-    QString sqlKey = QString ("ALTER TABLE '%1' ADD FOREING KEY ('%2') REFERENCES '%3'('%4);").arg(nameTbl1,  nameColumn1,  nameTbl2,  nameColumn2);
-    QString fileName = QString("KEY_"+nameTbl1+"_("+nameColumn1+").sql");
-    QString fileN=
-               QFileDialog::getSaveFileName( this,
-                                             tr("Сохранить файл как"),
-                                             fileName,
-                                             tr("SQL(*.sql)")
-                                             );
-    QFile file(fileN);
-    if(!fileN.isEmpty() &&file.open(QIODevice::WriteOnly) )
 
-            {
-                QTextStream stream(&file);
-                stream << sqlKey;
-                file.close();
-                QFileInfo fileinfo(file);
-                qint64 size=fileinfo.size();
-                QSqlQuery query;
-              query.prepare("INSERT INTO " TABLE_FILES " ( " TABLE_FILENAME ", "
-                                                       TABLE_FILESYSPATH ", "
-                                                       TABLE_FILESIZE " ) "
-                           "VALUES (:NAME, :PATH, :SIZE )");
-              query.bindValue(":NAME",fileName);
-              query.bindValue(":PATH",fileN);
-              query.bindValue(":SIZE",size);
-              // После чего выполняется запросом методом exec()
-              if(!query.exec()){
-                  QMessageBox::warning(0, QObject::tr("Ошибка БД!"), query.lastError().text());
-              }
-            }
-    else
-    {
-         QMessageBox::warning(0, QObject::tr("Ошибка!"),"Выбран неверный путь.");
-    }
-
-
-}
 
 
 /* принятие данных из форм и запись их в запрос к бд
- *Инициализируем внешний вид таблицы с данными
- *Очищает поля для ввода
  * */
 void MainWindow::addKey()
 {
-    QString f1,f2,f3,f4;
+    QString nameTbl1;
+    QString nameColumn1;
+    QString nameTbl2;
+    QString nameColumn2;
 
-    f1=ui->lineEdit_4->text();
-    f2=ui->lineEdit_5->text();
-    f3=ui->lineEdit_6->text();
-    f4=ui->lineEdit_7->text();
+    nameTbl1=ui->lineTbl1->text();
+    nameColumn1=ui->lineColumn1->text();
+    nameTbl2=ui->lineTbl2->text();
+    nameColumn2=ui->lineTbl2->text();
+     //ALTER TABLE table1 ADD FOREING KEY (colum1) REFERENCES table2(column2);
+    QString sqlKey = QString ("ALTER TABLE '%1' ADD FOREING KEY ('%2') REFERENCES '%3'('%4);")
+            .arg(nameTbl1,  nameColumn1,  nameTbl2,  nameColumn2);
+    QString fileName = QString("KEY_"+nameTbl1+"_("+nameColumn1+").sql");
 
-    createKey(f1,f2,f3,f4);
+    addFile(fileName,sqlKey);
     updateView();
 
-    ui->lineEdit_4->setText("");
-    ui->lineEdit_5->setText("");
-    ui->lineEdit_6->setText("");
-    ui->lineEdit_7->setText("");
+    ui->lineTbl1->setText("");
+    ui->lineColumn1->setText("");
+    ui->lineTbl2->setText("");
+    ui->lineTbl2->setText("");
 }
 
+/* принятие данных из форм и запись их в запрос к бд
+ * */
+void MainWindow::addDB() {
 
-void MainWindow::handleButton() {
+    QString nameUser;
+    QString userPassword;
+    QString nameDB;
 
-    QString f1,f2,f3;
+    nameDB=ui->lineDB->text();
+    nameUser=ui->lineUser->text();
+    userPassword=ui->linePassword->text();
+    //CREATE USER test_user WITH password 'qwerty';
+    //CREATE DATABASE test_database OWNER test_user;
 
-    f1=ui->lineEdit->text();
-    f2=ui->lineEdit_2->text();
-    f3=ui->lineEdit_3->text();
-
-    createDB(f1,f2,f3);  
+    QString sqlDB = QString ("CREATE USER '%1' WITH password '%2'\nCREATE DATABASE '%3' OWNER '%4'")
+            .arg(nameUser,userPassword,nameDB,nameUser);
+    QString fileName = QString("DB_"+nameDB+"_"+nameUser+".sql");
+    addFile(fileName,sqlDB);
     updateView();
 
-    ui->lineEdit->setText("");
-    ui->lineEdit_2->setText("");
-    ui->lineEdit_3->setText("");
+    ui->lineDB->setText("");
+    ui->lineUser->setText("");
+    ui->linePassword->setText("");
 
 }
 

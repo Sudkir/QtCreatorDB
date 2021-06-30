@@ -1,10 +1,19 @@
 #ifndef TABLEWINDOW_H
 #define TABLEWINDOW_H
 
+#include "ui_tablewindow.h"
+#include "database.h"
+
 #include <QWidget>
 #include <QStandardItem>
 #include <QDialog>
-
+#include <QCoreApplication>
+#include <QListView>
+#include <QLabel>
+#include <QMessageBox>
+#include <QFileDialog>
+#include <QTextStream>
+#include <QSqlQuery>
 
 namespace Ui {
 class tablewindow;
@@ -23,12 +32,7 @@ private slots:
 private:
     Ui::tablewindow *ui;
     QStandardItemModel  *model;
-    void loadTableView();
-
-
-public:
-
-
+    void loadingTableView();
 };
 
 #endif // TABLEWINDOW_H

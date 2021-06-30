@@ -45,7 +45,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="db_name">
+       <widget class="QLabel" name="uiNameDB">
         <property name="font">
          <font>
           <pointsize>12</pointsize>
@@ -70,7 +70,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="AddTableBtn">
+       <widget class="QPushButton" name="addTableBtn">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -155,7 +155,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit_4">
+       <widget class="QLineEdit" name="lineTbl1">
         <property name="font">
          <font>
           <pointsize>12</pointsize>
@@ -176,7 +176,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit_5">
+       <widget class="QLineEdit" name="lineColumn1">
         <property name="font">
          <font>
           <pointsize>12</pointsize>
@@ -197,7 +197,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit_6">
+       <widget class="QLineEdit" name="lineTbl2">
         <property name="font">
          <font>
           <pointsize>12</pointsize>
@@ -218,7 +218,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit_7">
+       <widget class="QLineEdit" name="lineColumn2">
         <property name="font">
          <font>
           <pointsize>12</pointsize>
@@ -227,7 +227,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="AddKeybtn">
+       <widget class="QPushButton" name="addKeybtn">
         <property name="font">
          <font>
           <pointsize>14</pointsize>
@@ -264,7 +264,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit">
+       <widget class="QLineEdit" name="lineDB">
         <property name="maximumSize">
          <size>
           <width>450</width>
@@ -291,7 +291,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit_2">
+       <widget class="QLineEdit" name="lineUser">
         <property name="maximumSize">
          <size>
           <width>450</width>
@@ -318,7 +318,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit_3">
+       <widget class="QLineEdit" name="linePassword">
         <property name="maximumSize">
          <size>
           <width>450</width>
@@ -351,7 +351,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="AddDBBtn">
+       <widget class="QPushButton" name="addDBBtn">
         <property name="maximumSize">
          <size>
           <width>600</width>

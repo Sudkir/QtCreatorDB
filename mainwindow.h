@@ -1,10 +1,16 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
+
+#include "database.h"
+#include "ui_mainwindow.h"
+#include "tablewindow.h"
+
 #include <QMainWindow>
 #include <QPushButton>
 #include <QSqlTableModel>
-#include "database.h"
-#include "tablewindow.h"
+#include <QCoreApplication>
+#include <QMessageBox>
+#include <QFileDialog>
 
 
 QT_BEGIN_NAMESPACE
@@ -20,7 +26,7 @@ public:
     virtual ~MainWindow();
 private slots:
     //функция книпки
-    void handleButton();
+    void addDB();
     void createTable();
     void addKey();
 private:
@@ -28,15 +34,15 @@ Ui::MainWindow  *ui;
     //объекты для взаимодействия с информацией в базе данных
     //и моделью представления таблицы базы данных
     DataBase        *db;
-    DataBase        *dbEmpty;
+    QFile *files;
     QSqlTableModel  *model;
-    QPushButton *m_button;
     tablewindow *tableW;
 
 private:
-    void createKey(QString nameTbl1, QString nameColumn1, QString nameTbl2, QString nameColumn2);
+
     void updateView();
-    void createDB( QString nameDB, QString nameUser, QString userPassword);
+    bool addFile(QString Name,QString File);
+
     //которые формируют модель и внешний вид TableView
     void setupModel(const QString &tableName, const QStringList &headers);
     void createUI();
